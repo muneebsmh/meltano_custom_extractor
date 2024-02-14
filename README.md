@@ -19,14 +19,13 @@ This repository contains a Python-based ELT (Extract, Load, Transform) applicati
 
 1. Clone this repository:
 
-bash ```git clone https://github.com/your-username/your-repo.git ```
+    ```git clone https://github.com/your-username/your-repo.git ```
 
 2. Navigate to the project directory:
 
 3. Update the `.env` file with your PostgreSQL database credentials and configurations.
 
 4. Build and run the Docker containers:
-
 
 5. Access the Meltano UI at `http://localhost:5000` to manage and monitor your ELT pipelines.
 
@@ -40,9 +39,4 @@ bash ```git clone https://github.com/your-username/your-repo.git ```
 
 ## Credits
 
-This ELT application was created by [Your Name] and is based on the Meltano framework.
-
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
+This ELT application was created by Syed Muneeb Hussain and is based on the Meltano framework.
