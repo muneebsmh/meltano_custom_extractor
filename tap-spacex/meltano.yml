@@ -1,0 +1,148 @@
+version: 1
+send_anonymous_usage_stats: true
+project_id: tap-spacex
+default_environment: dev
+environments:
+- name: prod
+  config:
+    plugins:
+      extractors:
+      - name: tap-spacex
+        config:
+          start_date: '2010-01-01T00:00:00Z'
+        namespace: tap_spacex
+        pip_url: -e .
+        capabilities:
+        - state
+        - catalog
+        - discover
+        - about
+        - stream-maps
+        settings:
+        - name: username
+        - name: password
+          kind: password
+          sensitive: true
+        - name: start_date
+          value: '2010-01-01T00:00:00Z'
+      loaders:
+      - name: target-postgres
+        config:
+          host: ${PROD_TARGET_POSTGRES_HOST}
+          port: ${PROD_TARGET_POSTGRES_PORT}
+          user: ${PROD_TARGET_POSTGRES_USER}
+          password: ${PROD_TARGET_POSTGRES_PASSWORD}
+          database: ${PROD_TARGET_POSTGRES_DBNAME}
+          default_target_schema: ${PROD_TARGET_POSTGRES_SCHEMA}
+          sqlalchemy_url: postgresql://${PROD_TARGET_POSTGRES_USER}:${PROD_TARGET_POSTGRES_PASSWORD}@${PROD_TARGET_POSTGRES_HOST}:${PROD_TARGET_POSTGRES_PORT}/${PROD_TARGET_POSTGRES_DBNAME}
+        variant: meltanolabs
+        pip_url: meltanolabs-target-postgres
+      utilities:
+      - name: dbt-postgres
+        variant: dbt-labs
+        pip_url: dbt-core dbt-postgres git+https://github.com/meltano/dbt-ext.git@main
+      - name: airflow
+        variant: apache
+        pip_url: git+https://github.com/meltano/airflow-ext.git@main apache-airflow==2.8.1
+          --constraint https://raw.githubusercontent.com/apache/airflow/constraints-2.8.1/constraints-no-providers-${MELTANO__PYTHON_VERSION}.txt
+  env:
+    source_db: ${PROD_TARGET_POSTGRES_DBNAME}
+    source_schema: ${PROD_TARGET_POSTGRES_SCHEMA}
+    target_db: ${PROD_TARGET_POSTGRES_DBNAME}
+    target_schema: ${PROD_TARGET_POSTGRES_SCHEMA}
+- name: dev
+  config:
+    plugins:
+      extractors:
+      - name: tap-spacex
+        config:
+          start_date: '2010-01-01T00:00:00Z'
+        namespace: tap_spacex
+        pip_url: -e .
+        capabilities:
+        - state
+        - catalog
+        - discover
+        - about
+        - stream-maps
+        settings:
+        - name: username
+        - name: password
+          kind: password
+          sensitive: true
+        - name: start_date
+          value: '2010-01-01T00:00:00Z'
+      loaders:
+      - name: target-postgres
+        config:
+          host: ${TARGET_POSTGRES_HOST}
+          port: ${TARGET_POSTGRES_PORT}
+          user: ${TARGET_POSTGRES_USER}
+          password: ${TARGET_POSTGRES_PASSWORD}
+          database: ${TARGET_POSTGRES_DBNAME}
+          default_target_schema: ${TARGET_POSTGRES_SCHEMA}
+          sqlalchemy_url: postgresql://${TARGET_POSTGRES_USER}:${TARGET_POSTGRES_PASSWORD}@${TARGET_POSTGRES_HOST}:${TARGET_POSTGRES_PORT}/${TARGET_POSTGRES_DBNAME}
+        variant: meltanolabs
+        pip_url: meltanolabs-target-postgres
+      utilities:
+      - name: dbt-postgres
+        variant: dbt-labs
+        pip_url: dbt-core dbt-postgres git+https://github.com/meltano/dbt-ext.git@main
+      - name: airflow
+        variant: apache
+        pip_url: git+https://github.com/meltano/airflow-ext.git@main apache-airflow==2.8.1
+          --constraint https://raw.githubusercontent.com/apache/airflow/constraints-2.8.1/constraints-no-providers-${MELTANO__PYTHON_VERSION}.txt
+  env:
+    source_db: ${TARGET_POSTGRES_DBNAME}
+    source_schema: ${TARGET_POSTGRES_SCHEMA}
+    target_db: ${TARGET_POSTGRES_DBNAME}
+    target_schema: ${TARGET_POSTGRES_SCHEMA}
+plugins:
+  extractors:
+  - name: tap-spacex
+    namespace: tap_spacex
+    pip_url: -e .
+    capabilities:
+    - state
+    - catalog
+    - discover
+    - about
+    - stream-maps
+    settings:
+    - name: username
+    - name: password
+      kind: password
+      sensitive: true
+    - name: start_date
+      value: '2010-01-01T00:00:00Z'
+    config:
+      start_date: '2010-01-01T00:00:00Z'
+  loaders:
+  - name: target-postgres
+    variant: meltanolabs
+    pip_url: meltanolabs-target-postgres
+    config:
+      host: ${TARGET_POSTGRES_HOST}
+      port: ${TARGET_POSTGRES_PORT}
+      user: ${TARGET_POSTGRES_USER}
+      password: ${TARGET_POSTGRES_PASSWORD}
+      database: ${TARGET_POSTGRES_DBNAME}
+      default_target_schema: ${TARGET_POSTGRES_SCHEMA}
+      sqlalchemy_url: postgresql://${TARGET_POSTGRES_USER}:${TARGET_POSTGRES_PASSWORD}@${TARGET_POSTGRES_HOST}:${TARGET_POSTGRES_PORT}/${TARGET_POSTGRES_DBNAME}
+  utilities:
+  - name: dbt-postgres
+    variant: dbt-labs
+    pip_url: dbt-core dbt-postgres git+https://github.com/meltano/dbt-ext.git@main
+  - name: airflow
+    variant: apache
+    pip_url: git+https://github.com/meltano/airflow-ext.git@main apache-airflow==2.8.1
+      --constraint https://raw.githubusercontent.com/apache/airflow/constraints-2.8.1/constraints-no-providers-${MELTANO__PYTHON_VERSION}.txt
+jobs:
+- name: spacex-elt
+  tasks:
+  - tap-spacex target-postgres
+  - dbt-postgres:run
+schedules:
+- name: spacex-elt-15-min
+  interval: '*/15 * * * *'
+  job: spacex-elt

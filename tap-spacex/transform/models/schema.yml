@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: model_launches
+    description:
+      information about satellites launches
+    materialized: view
+  - name: model_starlink
+    description:
+      information about satellites
+    materialized: view
+  - name: model_launches_summary
+    description:
+      Model to calculate total satellites, total launches, average satellites per launch, and average days between launches for Starlink satellites
+    materialized: table
+

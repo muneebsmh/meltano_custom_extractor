@@ -1,0 +1,13 @@
+version: 1
+default_environment: dev
+project_id: e501f73d-2e47-45f0-86bd-02c66f2e59cc
+environments:
+- name: dev
+- name: staging
+- name: prod
+plugins:
+  extractors:
+  - name: tap-spacex
+    namespace: tap-spacex
+    pip_url: -e ../tap-spacex
+    executable: tap-spacex

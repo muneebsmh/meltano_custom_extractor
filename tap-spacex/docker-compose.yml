@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  meltano:
+    build: .
+    ports:
+      - "5001:5001"
+    environment:
+      - MELTANO_ENVIRONMENT=dev
+    command: run spacex-elt
+#  redis:
+#    image: redis:5.0.5
+#
+#  postgres:
+#    image: postgres:latest
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      - POSTGRES_USER=myuser
+#      - POSTGRES_PASSWORD=mypassword
+#      - POSTGRES_DB=airflowdb  # Change this to your desired database name
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#
+#  airflow-webserver:
+#    build: .
+#    command: invoke airflow webserver
+#    expose:
+#      - 8080
+#    ports:
+#      - 8080:8080
+#    restart: unless-stopped
+#    environment:
+#      - AIRFLOW__CORE__EXECUTOR=SequentialExecutor
+#      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://myuser:mypassword@postgres:5432/airflowdb
+#    depends_on:
+#      - meltano
+#      - postgres
+#      - redis
+#    networks:
+#      - airflow_network
+#
+#  airflow-scheduler:
+#    build: .
+#    command: invoke airflow scheduler
+#    expose:
+#      - 8793
+#    restart: unless-stopped
+#    environment:
+#      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+#      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://myuser:mypassword@postgres:5432/airflowdb
+#    depends_on:
+#      - meltano
+#      - postgres
+#      - redis
+#    networks:
+#      - airflow_network
+#
+#networks:
+#  airflow_network:
+#
+#volumes:
+#  postgres_data:

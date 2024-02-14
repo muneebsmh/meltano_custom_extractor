@@ -1,0 +1,9 @@
+version: 2
+
+sources:
+  - name: pg_source
+    database: "{{ env_var('source_db') }}"
+    schema: "{{ env_var('source_schema') }}"
+    tables:
+      - name: launches
+      - name: starlink
